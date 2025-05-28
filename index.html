@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Toshi!</title>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            min-height: 100vh;
+        }
         #toshi-game {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
@@ -14,7 +21,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: auto; /* 改為 auto 以避免推擠 */
+            padding: 20px;
+            padding-bottom: 60px; /* 確保宣傳區塊有空間 */
             margin: 0;
             user-select: none;
         }
@@ -66,7 +75,7 @@
             white-space: nowrap;
         }
         #promo-section {
-            margin-top: 40px;
+            margin: 40px 20px;
             padding: 20px;
             text-align: center;
             background-color: #f9f9f9;
@@ -121,10 +130,9 @@
         </div>
         <div id="toshi-counter">You've Got 0 Toshi!</div>
         <div id="result" aria-live="polite"></div>
-        <img id="dog-image" src="image/toshi.png" alt="cute Toshi">
+        <img id="dog-image" src="images/toshi.png" alt="cute Toshi"> <!-- 修正路徑為 images -->
     </div>
 
-    <!-- 修復後的宣傳區塊 -->
     <div id="promo-section">
         <p>Meet Toshi, the cutest pup on Solana! 🐶 He loves playing timing games and making new friends. Follow Toshi's adventures and see more of his adorable moments here!</p>
         <p><a href="https://www.instagram.com/toshi_the_pup" target="_blank">Visit Toshi's home!</a></p>
@@ -188,7 +196,7 @@
                 resultDisplay.innerText = "Toshi！";
                 resultDisplay.className = 'success';
                 dogImage.style.display = 'block';
-                dogImage.src = 'image/toshi.png?t=' + Date.now();
+                dogImage.src = 'images/toshi.png?t=' + Date.now();
                 dogImage.alt = "Toshi's picture";
                 toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
             } else if (heldTime < targetTime) {
@@ -214,8 +222,9 @@
         holdButton.addEventListener('touchend', handlePressEnd);
 
         dogImage.onerror = () => {
-            dogImage.style.display = 'none';
-            resultDisplay.innerText = "Get Toshi! But his pic is down.";
+            dogImage.src = 'https://placedog.net/600/400?random'; // 備用圖片
+            dogImage.style.display = 'block';
+            resultDisplay.innerText = "Get Toshi! Using a placeholder pic.";
         };
 
         generateNewTarget();
