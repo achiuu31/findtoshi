@@ -23,7 +23,7 @@
             justify-content: center;
             height: auto;
             padding: 20px;
-            padding-bottom: 100px; /* 為固定按鈕留出空間 */
+            padding-bottom: 40px; /* 調整底部間距 */
             margin: 0;
             user-select: none;
         }
@@ -38,9 +38,7 @@
             border: none;
             box-shadow: 0 5px #756b54;
             transition: all 0.07s ease-in-out;
-            position: fixed; /* 固定在畫面底部 */
-            bottom: 20px; /* 距離底部 20px */
-            z-index: 10; /* 確保按鈕在其他元素之上 */
+            margin-bottom: 20px; /* 與 promo-section 的間距 */
         }
         #toshi-game #holdButton:active {
             transform: translateY(3px);
@@ -79,8 +77,7 @@
             vertical-align: middle;
         }
         #promo-section {
-            margin: 40px 20px;
-            margin-bottom: 100px; /* 為固定按鈕留出空間，避免重疊 */
+            margin: 0 20px; /* 移除 margin-bottom，現在由 #toshi-game 控制 */
             padding: 20px;
             text-align: left;
             background-color: #f9f9f9;
@@ -106,7 +103,6 @@
             #toshi-game #holdButton {
                 padding: 15px 30px;
                 font-size: 24px;
-                bottom: 15px; /* 手機模式下稍微調整距離 */
             }
             #toshi-game #game-info, #toshi-game #result, #toshi-game #toshi-counter {
                 font-size: 18px;
@@ -118,8 +114,7 @@
                 max-width: 150px;
             }
             #promo-section {
-                margin: 20px;
-                margin-bottom: 80px; /* 手機模式下調整間距 */
+                margin: 0 20px;
                 padding: 15px;
             }
             #promo-section p {
@@ -138,12 +133,11 @@
         <div id="result" aria-live="polite"></div>
         <img id="dog-image" src="image/toshi.png" alt="cute Toshi"> 
         <button id="holdButton" aria-label="Hold to Get Toshi">Hold to Get Toshi！</button>
-    </div>
-
-    <div id="promo-section">
-        <p>Meet Toshi, the cutest pup on Solana! 🐶 He loves playing timing games and is growing up so fast!</p>
-        <p>CA: 8WzDFPNjUSV7ZPpNiqKY8NcWH9J4tDSgSeifp6Kboop</p>
-        <p><a href="https://x.com/i/communities/1918067538396586314">Meet Toshi Here!</a></p>
+        <div id="promo-section"> <!-- 移動到 #toshi-game 內，按鈕之下 -->
+            <p>Meet Toshi, the cutest pup on Solana! 🐶 He loves playing timing games and is growing up so fast!</p>
+            <p>CA: 8WzDFPNjUSV7ZPpNiqKY8NcWH9J4tDSgSeifp6Kboop</p>
+            <p><a href="https://x.com/i/communities/1918067538396586314">Meet Toshi Here!</a></p>
+        </div>
     </div>
 
     <script>
