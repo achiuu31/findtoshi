@@ -150,12 +150,17 @@
 
         let startTime = 0;
         let timerId = null;
+        let timeoutId = null; // 用於儲存 setTimeout 的 ID
         let targetTime = 0;
         let isLocked = false;
         let toshiCount = 0;
         const TOLERANCE = 0.05;
 
         function generateNewTarget() {
+            if (timeoutId) {
+                clearTimeout(timeoutId); // 清除之前的 timeout
+                timeoutId = null;
+            }
             targetTime = 1;
             targetTimeDisplay.innerText = targetTime;
             resultDisplay.innerText = "ready...";
@@ -168,6 +173,13 @@
         }
 
         function handlePressStart() {
+            if (isLocked || timeoutId === null) return; // 確保只有在 timeout 期間才能觸發
+            if (timeoutId) {
+                clearTimeout(timeoutId); // 清除 4 秒的自動切換
+                timeoutId = null;
+                generateNewTarget(); // 立即開始新輪
+                return;
+            }
             if (isLocked) return;
             isLocked = true;
             startTime = Date.now();
@@ -208,9 +220,10 @@
                 resultDisplay.innerText = "shiiiii";
                 resultDisplay.className = 'too-long';
             }
+
             startTime = 0;
             isLocked = false;
-            setTimeout(generateNewTarget, 4000);
+            timeoutId = setTimeout(generateNewTarget, 4000); // 設置新的 timeout
         }
 
         holdButton.addEventListener('mousedown', handlePressStart);
