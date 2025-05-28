@@ -40,7 +40,7 @@
             min-height: 60px;
         }
         #toshi-game #toshi-counter {
-            color: #666; /* 灰色，與其他資訊區分 */
+            color: #666;
             font-weight: 500;
         }
         #toshi-game #result {
@@ -65,6 +65,29 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+        #promo-section {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            max-width: 600px;
+        }
+        #promo-section p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        #promo-section a {
+            color: #a87807;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        #promo-section a:hover {
+            color: #756b54;
+            text-decoration: underline;
+        }
         @media (max-width: 600px) {
             #toshi-game #holdButton {
                 padding: 15px 30px;
@@ -79,6 +102,13 @@
             #toshi-game #held-time {
                 max-width: 150px;
             }
+            #promo-section {
+                margin: 20px;
+                padding: 15px;
+            }
+            #promo-section p {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -92,101 +122,103 @@
         <div id="toshi-counter">You've Got 0 Toshi!</div>
         <div id="result" aria-live="polite"></div>
         <img id="dog-image" src="image/toshi.png" alt="cute Toshi">
-    </div> 
-    <div>
+    </div>
+
+    <!-- 修復後的宣傳區塊 -->
+    <div id="promo-section">
         <p>Meet Toshi, the cutest pup on Solana! 🐶 He loves playing timing games and making new friends. Follow Toshi's adventures and see more of his adorable moments here!</p>
         <p><a href="https://www.instagram.com/toshi_the_pup" target="_blank">Visit Toshi's home!</a></p>
     </div>
-        <script>
-            const holdButton = document.getElementById('holdButton');
-            const targetTimeDisplay = document.getElementById('target-time');
-            const heldTimeDisplay = document.getElementById('held-time');
-            const resultDisplay = document.getElementById('result');
-            const dogImage = document.getElementById('dog-image');
-            const toshiCounterDisplay = document.getElementById('toshi-counter');
 
-            let startTime = 0;
-            let timerId = null;
-            let targetTime = 0;
-            let isLocked = false;
-            let toshiCount = 0; // 新增計數變數
-            const TOLERANCE = 0.05;
+    <script>
+        const holdButton = document.getElementById('holdButton');
+        const targetTimeDisplay = document.getElementById('target-time');
+        const heldTimeDisplay = document.getElementById('held-time');
+        const resultDisplay = document.getElementById('result');
+        const dogImage = document.getElementById('dog-image');
+        const toshiCounterDisplay = document.getElementById('toshi-counter');
 
-            function generateNewTarget() {
-                targetTime = 1;
-                targetTimeDisplay.innerText = targetTime;
-                resultDisplay.innerText = "ready...";
-                resultDisplay.className = '';
-                heldTimeDisplay.innerText = "0.00";
-                toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`; // 初始化計數器顯示
-                dogImage.style.display = 'none';
-                startTime = 0;
-                isLocked = false;
+        let startTime = 0;
+        let timerId = null;
+        let targetTime = 0;
+        let isLocked = false;
+        let toshiCount = 0;
+        const TOLERANCE = 0.05;
+
+        function generateNewTarget() {
+            targetTime = 1;
+            targetTimeDisplay.innerText = targetTime;
+            resultDisplay.innerText = "ready...";
+            resultDisplay.className = '';
+            heldTimeDisplay.innerText = "0.00";
+            toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
+            dogImage.style.display = 'none';
+            startTime = 0;
+            isLocked = false;
+        }
+
+        function handlePressStart() {
+            if (isLocked) return;
+            isLocked = true;
+            startTime = Date.now();
+            resultDisplay.innerText = "Holding...";
+            resultDisplay.className = '';
+            timerId = setInterval(() => {
+                if (startTime === 0) return;
+                const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                heldTimeDisplay.innerText = elapsedTime;
+            }, 10);
+        }
+
+        function handlePressEnd() {
+            if (startTime === 0 || !isLocked) return;
+            clearInterval(timerId);
+            const endTime = Date.now();
+            const heldTime = (endTime - startTime) / 1000;
+            heldTimeDisplay.innerText = heldTime.toFixed(2);
+
+            if (typeof targetTime !== 'number' || isNaN(targetTime)) {
+                targetTime = 0;
+                resultDisplay.innerText = "Error: the timer is down.";
+                return;
             }
 
-            function handlePressStart() {
-                if (isLocked) return;
-                isLocked = true;
-                startTime = Date.now();
-                resultDisplay.innerText = "Holding...";
-                resultDisplay.className = '';
-                timerId = setInterval(() => {
-                    if (startTime === 0) return;
-                    const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
-                    heldTimeDisplay.innerText = elapsedTime;
-                }, 10);
+            if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
+                toshiCount++;
+                resultDisplay.innerText = "Toshi！";
+                resultDisplay.className = 'success';
+                dogImage.style.display = 'block';
+                dogImage.src = 'image/toshi.png?t=' + Date.now();
+                dogImage.alt = "Toshi's picture";
+                toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
+            } else if (heldTime < targetTime) {
+                resultDisplay.innerText = "tooooo";
+                resultDisplay.className = 'too-short';
+            } else {
+                resultDisplay.innerText = "shiiiii";
+                resultDisplay.className = 'too-long';
             }
 
-            function handlePressEnd() {
-                if (startTime === 0 || !isLocked) return;
-                clearInterval(timerId);
-                const endTime = Date.now();
-                const heldTime = (endTime - startTime) / 1000;
-                heldTimeDisplay.innerText = heldTime.toFixed(2);
+            startTime = 0;
+            isLocked = false;
+            setTimeout(generateNewTarget, 2000);
+        }
 
-                if (typeof targetTime !== 'number' || isNaN(targetTime)) {
-                    targetTime = 0;
-                    resultDisplay.innerText = "Error: the timer is down.";
-                    return;
-                }
+        holdButton.addEventListener('mousedown', handlePressStart);
+        holdButton.addEventListener('mouseup', handlePressEnd);
+        holdButton.addEventListener('mouseleave', handlePressEnd);
+        holdButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handlePressStart();
+        });
+        holdButton.addEventListener('touchend', handlePressEnd);
 
-                if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
-                    toshiCount++; // 成功時計數加 1
-                    resultDisplay.innerText = "Toshi！";
-                    resultDisplay.className = 'success';
-                    dogImage.style.display = 'block';
-                    dogImage.src = 'image/toshi.png?t=' + Date.now();
-                    dogImage.alt = "Toshi's picture";
-                    toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`; // 更新計數器顯示
-                } else if (heldTime < targetTime) {
-                    resultDisplay.innerText = "tooooo";
-                    resultDisplay.className = 'too-short';
-                } else {
-                    resultDisplay.innerText = "shiiiii";
-                    resultDisplay.className = 'too-long';
-                }
+        dogImage.onerror = () => {
+            dogImage.style.display = 'none';
+            resultDisplay.innerText = "Get Toshi! But his pic is down.";
+        };
 
-                startTime = 0;
-                isLocked = false;
-                setTimeout(generateNewTarget, 2000);
-            }
-
-            holdButton.addEventListener('mousedown', handlePressStart);
-            holdButton.addEventListener('mouseup', handlePressEnd);
-            holdButton.addEventListener('mouseleave', handlePressEnd);
-            holdButton.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handlePressStart();
-            });
-            holdButton.addEventListener('touchend', handlePressEnd);
-
-            dogImage.onerror = () => {
-                dogImage.style.display = 'none';
-                resultDisplay.innerText = "Get Toshi! But his pic is down.";
-            };
-
-            generateNewTarget();
-        </script>
-    </div>
+        generateNewTarget();
+    </script>
 </body>
 </html>
