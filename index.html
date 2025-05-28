@@ -8,7 +8,7 @@
         #toshi-game {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
-            background-color: #ffffff; 
+            background-color: #ffffff; /* 改為白色，避免干擾 */
             color: #333;
             display: flex;
             flex-direction: column;
@@ -23,16 +23,16 @@
             font-size: 28px;
             font-weight: bold;
             color: white;
-            background-color: #cfcbc0;
+            background-color: #007bff;
             border-radius: 12px;
             cursor: pointer;
             border: none;
-            box-shadow: 0 5px #45443f;
-            transition: all 0.05s ease-in-out;
+            box-shadow: 0 5px #0056b3;
+            transition: all 0.07s ease-in-out;
         }
         #toshi-game #holdButton:active {
             transform: translateY(3px);
-            box-shadow: 0 2px #45443f;
+            box-shadow: 0 2px #0056b3;
         }
         #toshi-game #game-info, #toshi-game #result {
             margin-top: 25px;
@@ -82,13 +82,13 @@
 </head>
 <body>
     <div id="toshi-game">
-        <button id="holdButton" aria-label="Hold to Find Toshi">Find Toshi！</button>
+        <button id="holdButton" aria-label="按住以呼叫 Toshi">呼叫 Toshi！</button>
         <div id="game-info">
-            <p>Target：<span id="target-time"></span>second</p>
-            <p>Hold for：<span id="held-time"></span>second</p>
+            <p>目標時間：<span id="target-time">?</span> 秒</p>
+            <p>你按了：<span id="held-time">0.00</span> 秒</p>
         </div>
         <div id="result" aria-live="polite"></div>
-        <img id="dog-image" src="image/toshi.png" alt="cute Toshi">
+        <img id="dog-image" src="image/toshi.png" alt="可愛的狗狗 Toshi">
 
         <script>
             const holdButton = document.getElementById('holdButton');
@@ -101,14 +101,14 @@
             let timerId = null;
             let targetTime = 0;
             let isLocked = false;
-            const TOLERANCE = 0.05;
+            const TOLERANCE = 0.1;
 
             function generateNewTarget() {
-                targetTime = parseFloat(1).toFixed(1));
+                targetTime = parseFloat((Math.random() * 4 + 1.5).toFixed(1));
                 targetTimeDisplay.innerText = targetTime;
-                resultDisplay.innerText = "Hold to Find Toshi";
+                resultDisplay.innerText = "準備...";
                 resultDisplay.className = '';
-                heldTimeDisplay.innerText = "";
+                heldTimeDisplay.innerText = "0.00";
                 dogImage.style.display = 'none';
                 startTime = 0;
                 isLocked = false;
@@ -118,11 +118,11 @@
                 if (isLocked) return;
                 isLocked = true;
                 startTime = Date.now();
-                resultDisplay.innerText = "Holding";
+                resultDisplay.innerText = "計時中...";
                 resultDisplay.className = '';
                 timerId = setInterval(() => {
                     if (startTime === 0) return;
-                    const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
+                    const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
                     heldTimeDisplay.innerText = elapsedTime;
                 }, 10);
             }
@@ -132,26 +132,26 @@
                 clearInterval(timerId);
                 const endTime = Date.now();
                 const heldTime = (endTime - startTime) / 1000;
-                heldTimeDisplay.innerText = heldTime.toFixed(2.5);
+                heldTimeDisplay.innerText = heldTime.toFixed(2);
 
                 if (typeof targetTime !== 'number' || isNaN(targetTime)) {
                     targetTime = 0;
-                    resultDisplay.innerText = "error: Timer is down";
+                    resultDisplay.innerText = "錯誤：目標時間無效";
                     return;
                 }
 
                 if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
-                    resultDisplay.innerText = "Find Toshi！";
+                    resultDisplay.innerText = "是 Toshi！";
                     resultDisplay.className = 'success';
                     dogImage.style.display = 'block';
                     dogImage.src = 'image/toshi.png?t=' + Date.now();
-                    dogImage.alt = "cute Toshi pic";
+                    dogImage.alt = "成功召喚的 Toshi 狗狗圖片";
                 } else if (heldTime < targetTime) {
                     resultDisplay.innerText = "tooooo";
-                    resultDisplay.className = 'hold it stll';
+                    resultDisplay.className = 'too-short';
                 } else {
                     resultDisplay.innerText = "shiiiii";
-                    resultDisplay.className = 'hold it shorter';
+                    resultDisplay.className = 'too-long';
                 }
 
                 startTime = 0;
@@ -170,8 +170,9 @@
 
             dogImage.onerror = () => {
                 dogImage.style.display = 'none';
-                resultDisplay.innerText = "Find Toshi, but his pic is down.";
+                resultDisplay.innerText = "是 Toshi！（但圖片跑掉了...）";
             };
+
             generateNewTarget();
         </script>
     </div>
