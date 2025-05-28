@@ -8,7 +8,7 @@
         #toshi-game {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
-            background-color: #ffffff; /* 改為白色，避免干擾 */
+            background-color: #ffffff;
             color: #333;
             display: flex;
             flex-direction: column;
@@ -34,10 +34,14 @@
             transform: translateY(3px);
             box-shadow: 0 2px #756b54;
         }
-        #toshi-game #game-info, #toshi-game #result {
+        #toshi-game #game-info, #toshi-game #result, #toshi-game #toshi-counter {
             margin-top: 25px;
             font-size: 20px;
             min-height: 60px;
+        }
+        #toshi-game #toshi-counter {
+            color: #666; /* 灰色，與其他資訊區分 */
+            font-weight: 500;
         }
         #toshi-game #result {
             font-size: 36px;
@@ -52,7 +56,7 @@
             margin-top: 20px;
             max-width: 80%;
             max-height: 350px;
-            background: transparent; /* 確保背景透明 */
+            background: transparent;
         }
         #toshi-game #held-time {
             display: inline-block;
@@ -66,7 +70,7 @@
                 padding: 15px 30px;
                 font-size: 24px;
             }
-            #toshi-game #game-info, #toshi-game #result {
+            #toshi-game #game-info, #toshi-game #result, #toshi-game #toshi-counter {
                 font-size: 18px;
             }
             #toshi-game #dog-image {
@@ -85,6 +89,7 @@
             <p>Timer：<span id="target-time">?</span> second</p>
             <p>Hold for：<span id="held-time">0.00</span> second</p>
         </div>
+        <div id="toshi-counter">You've Got 0 Toshi</div>
         <div id="result" aria-live="polite"></div>
         <img id="dog-image" src="image/toshi.png" alt="cute Toshi">
 
@@ -94,11 +99,13 @@
             const heldTimeDisplay = document.getElementById('held-time');
             const resultDisplay = document.getElementById('result');
             const dogImage = document.getElementById('dog-image');
+            const toshiCounterDisplay = document.getElementById('toshi-counter');
 
             let startTime = 0;
             let timerId = null;
             let targetTime = 0;
             let isLocked = false;
+            let toshiCount = 0; // 新增計數變數
             const TOLERANCE = 0.05;
 
             function generateNewTarget() {
@@ -107,6 +114,7 @@
                 resultDisplay.innerText = "ready...";
                 resultDisplay.className = '';
                 heldTimeDisplay.innerText = "0.00";
+                toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi`; // 初始化計數器顯示
                 dogImage.style.display = 'none';
                 startTime = 0;
                 isLocked = false;
@@ -139,11 +147,13 @@
                 }
 
                 if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
+                    toshiCount++; // 成功時計數加 1
                     resultDisplay.innerText = "Toshi！";
                     resultDisplay.className = 'success';
                     dogImage.style.display = 'block';
                     dogImage.src = 'image/toshi.png?t=' + Date.now();
                     dogImage.alt = "Toshi's picture";
+                    toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi`; // 更新計數器顯示
                 } else if (heldTime < targetTime) {
                     resultDisplay.innerText = "tooooo";
                     resultDisplay.className = 'too-short';
