@@ -153,42 +153,60 @@
         let timeoutId = null;
         let targetTime = 0;
         let toshiCount = 0;
+        let gameState = 'ready'; // 'ready', 'holding', 'result'
         const TOLERANCE = 0.05;
 
         function generateNewTarget() {
-            // 這個函數現在只專注於重設遊戲參數和UI
             targetTime = 1;
             targetTimeDisplay.innerText = targetTime;
-            resultDisplay.innerText = "ready..."; // 初始或重設時顯示
+            resultDisplay.innerText = "ready...";
             resultDisplay.className = '';
             heldTimeDisplay.innerText = "0.00";
             toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
             dogImage.style.display = 'none';
             startTime = 0;
+            gameState = 'ready';
         }
-        
-        function handlePressStart() {
-            // 如果計時器正在運行（表示正在按著），則不執行任何操作
-            if (timerId) return;
-        
-            // *** 主要修改處 ***
-            // 如果 timeoutId 存在，表示正處於上一局結束後的等待狀態
-            // 我們要清除這個等待，並立刻開始新的一局
+
+        function startNewRound() {
+            // 清除任何現有的計時器
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
             if (timeoutId) {
                 clearTimeout(timeoutId);
                 timeoutId = null;
             }
-        
-            // 無論是從等待狀態來，還是新的一局，都直接開始計時
+
+            // 重置顯示但不顯示 "ready..."
+            heldTimeDisplay.innerText = "0.00";
+            dogImage.style.display = 'none';
+            gameState = 'ready';
+        }
+
+        function handlePressStart() {
+            // 如果正在計時，不執行任何操作
+            if (timerId) return;
+
+            // 清除任何現有的超時計時器
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+
+            // 如果是在結果狀態，直接開始新一輪
+            if (gameState === 'result') {
+                startNewRound();
+            }
+
+            // 開始計時
             startTime = Date.now();
             resultDisplay.innerText = "Holding...";
             resultDisplay.className = '';
+            gameState = 'holding';
             
-            // 確保舊的計時器（如果有的話）被清除
-            if (timerId) clearInterval(timerId); 
-        
             timerId = setInterval(() => {
-                // 增加一個檢查，確保 startTime 有被設定
                 if (startTime === 0) return;
                 const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
                 heldTimeDisplay.innerText = elapsedTime;
@@ -196,8 +214,8 @@
         }
         
         function handlePressEnd() {
-            // 如果 startTime 是 0，表示計時從未開始，直接返回
-            if (startTime === 0) return;
+            // 如果沒有開始計時或不在計時狀態，直接返回
+            if (startTime === 0 || gameState !== 'holding') return;
             
             // 清除計時器
             if (timerId) {
@@ -208,13 +226,14 @@
             const endTime = Date.now();
             const heldTime = (endTime - startTime) / 1000;
             heldTimeDisplay.innerText = heldTime.toFixed(2);
-        
+            gameState = 'result';
+
             if (typeof targetTime !== 'number' || isNaN(targetTime)) {
                 targetTime = 0;
                 resultDisplay.innerText = "Error: the timer is down.";
                 return;
             }
-        
+
             if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
                 toshiCount++;
                 resultDisplay.innerText = "Toshi！";
@@ -231,14 +250,14 @@
                 resultDisplay.className = 'too-long';
             }
             
-            // 設定一個 4 秒的計時器，如果 4 秒內玩家沒按按鈕，就自動重設回 ready 狀態
+            // 設定 4 秒超時，如果沒有新的按鈕操作就重置到 ready 狀態
             timeoutId = setTimeout(() => {
                 generateNewTarget();
-                timeoutId = null; // 清除標記
+                timeoutId = null;
             }, 4000);
         }
         
-        // 事件監聽器維持不變
+        // 事件監聽器
         holdButton.addEventListener('mousedown', handlePressStart);
         holdButton.addEventListener('mouseup', handlePressEnd);
         holdButton.addEventListener('mouseleave', handlePressEnd);
@@ -252,8 +271,8 @@
             dogImage.style.display = 'none';
             resultDisplay.innerText = "Get Toshi! Picture unavailable.";
         };
-        
-        // 遊戲初次載入
+
+        // 初始化遊戲
         generateNewTarget();
     </script>
 </body>
