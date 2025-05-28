@@ -173,7 +173,7 @@
         }
 
         function handlePressStart() {
-            // 如果在 4 秒等待期間按下，提前開始新輪
+            // 如果在 4 秒等待期間（timeoutId 存在且未鎖定），提前開始新輪
             if (timeoutId && !isLocked) {
                 clearTimeout(timeoutId);
                 timeoutId = null;
@@ -181,12 +181,15 @@
                 return;
             }
 
-            // 正常計時邏輯
+            // 如果已經鎖定（正在計時），則不執行
             if (isLocked) return;
+
+            // 開始計時
             isLocked = true;
             startTime = Date.now();
             resultDisplay.innerText = "Holding...";
             resultDisplay.className = '';
+            if (timerId) clearInterval(timerId); // 確保沒有舊的計時器
             timerId = setInterval(() => {
                 if (startTime === 0) return;
                 const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -196,7 +199,10 @@
 
         function handlePressEnd() {
             if (startTime === 0 || !isLocked) return;
-            clearInterval(timerId);
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
             const endTime = Date.now();
             const heldTime = (endTime - startTime) / 1000;
             heldTimeDisplay.innerText = heldTime.toFixed(2);
