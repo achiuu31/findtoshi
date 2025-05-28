@@ -130,7 +130,7 @@
         </div>
         <div id="toshi-counter">You've Got 0 Toshi!</div>
         <div id="result" aria-live="polite"></div>
-        <img id="dog-image" src="image/toshi.png" alt="cute Toshi"> <!-- 修正路徑為 images -->
+        <img id="dog-image" src="image/toshi.png" alt="cute Toshi"> 
     </div>
 
     <div id="promo-section">
@@ -223,9 +223,9 @@
         holdButton.addEventListener('touchend', handlePressEnd);
 
         dogImage.onerror = () => {
-            dogImage.src = 'https://placedog.net/600/400?random'; // 備用圖片
+            dogImage.src = ''; // 備用圖片
             dogImage.style.display = 'block';
-            resultDisplay.innerText = "Get Toshi! Using a placeholder pic.";
+            resultDisplay.innerText = "Get Toshi!";
         };
 
         generateNewTarget();
