@@ -142,108 +142,122 @@
 
     <script>
         const holdButton = document.getElementById('holdButton');
-const targetTimeDisplay = document.getElementById('target-time');
-const heldTimeDisplay = document.getElementById('held-time');
-const resultDisplay = document.getElementById('result');
-const dogImage = document.getElementById('dog-image');
-const toshiCounterDisplay = document.getElementById('toshi-counter');
+        const targetTimeDisplay = document.getElementById('target-time');
+        const heldTimeDisplay = document.getElementById('held-time');
+        const resultDisplay = document.getElementById('result');
+        const dogImage = document.getElementById('dog-image');
+        const toshiCounterDisplay = document.getElementById('toshi-counter');
 
-let startTime = 0;
-let timerId = null;
-let timeoutId = null;
-let targetTime = 0;
-let toshiCount = 0;
-const TOLERANCE = 0.05;
+        let startTime = 0;
+        let timerId = null;
+        let timeoutId = null;
+        let targetTime = 0;
+        let toshiCount = 0;
+        const TOLERANCE = 0.05;
 
-function generateNewTarget() {
-    if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-    }
-    targetTime = 1;
-    targetTimeDisplay.innerText = targetTime;
-    resultDisplay.innerText = "ready...";
-    resultDisplay.className = '';
-    heldTimeDisplay.innerText = "0.00";
-    toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
-    dogImage.style.display = 'none';
-    startTime = 0;
-}
-
-function handlePressStart() {
-    // 如果計時器正在運行，則不執行任何操作
-    if (timerId) return;
-
-    if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
+        function generateNewTarget() {
+            // 這個函數現在只專注於重設遊戲參數和UI
+            targetTime = 1;
+            targetTimeDisplay.innerText = targetTime;
+            resultDisplay.innerText = "ready..."; // 初始或重設時顯示
+            resultDisplay.className = '';
+            heldTimeDisplay.innerText = "0.00";
+            toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
+            dogImage.style.display = 'none';
+            startTime = 0;
+        }
+        
+        function handlePressStart() {
+            // 如果計時器正在運行（表示正在按著），則不執行任何操作
+            if (timerId) return;
+        
+            // *** 主要修改處 ***
+            // 如果 timeoutId 存在，表示正處於上一局結束後的等待狀態
+            // 我們要清除這個等待，並立刻開始新的一局
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+        
+            // 無論是從等待狀態來，還是新的一局，都直接開始計時
+            startTime = Date.now();
+            resultDisplay.innerText = "Holding...";
+            resultDisplay.className = '';
+            
+            // 確保舊的計時器（如果有的話）被清除
+            if (timerId) clearInterval(timerId); 
+        
+            timerId = setInterval(() => {
+                // 增加一個檢查，確保 startTime 有被設定
+                if (startTime === 0) return;
+                const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                heldTimeDisplay.innerText = elapsedTime;
+            }, 10);
+        }
+        
+        function handlePressEnd() {
+            // 如果 startTime 是 0，表示計時從未開始，直接返回
+            if (startTime === 0) return;
+            
+            // 清除計時器
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+            
+            const endTime = Date.now();
+            const heldTime = (endTime - startTime) / 1000;
+            heldTimeDisplay.innerText = heldTime.toFixed(2);
+        
+            if (typeof targetTime !== 'number' || isNaN(targetTime)) {
+                targetTime = 0;
+                resultDisplay.innerText = "Error: the timer is down.";
+                return;
+            }
+        
+            if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
+                toshiCount++;
+                resultDisplay.innerText = "Toshi！";
+                resultDisplay.className = 'success';
+                dogImage.style.display = 'block';
+                dogImage.src = 'image/toshi.png?t=' + Date.now();
+                dogImage.alt = "Toshi's picture";
+                toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
+            } else if (heldTime < targetTime) {
+                resultDisplay.innerText = "tooooo";
+                resultDisplay.className = 'too-short';
+            } else {
+                resultDisplay.innerText = "shiiiii";
+                resultDisplay.className = 'too-long';
+            }
+        
+            // 重置 startTime，為下一輪做準備
+            startTime = 0; 
+            
+            // 設定一個 4 秒的計時器，如果 4 秒內玩家沒按按鈕，就自動重設回 ready 狀態
+            timeoutId = setTimeout(() => {
+                generateNewTarget();
+                timeoutId = null; // 清除標記
+            }, 4000);
+        }
+        
+        // 事件監聽器維持不變
+        holdButton.addEventListener('mousedown', handlePressStart);
+        holdButton.addEventListener('mouseup', handlePressEnd);
+        holdButton.addEventListener('mouseleave', handlePressEnd);
+        holdButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handlePressStart();
+        });
+        holdButton.addEventListener('touchend', handlePressEnd);
+        
+        dogImage.onerror = () => {
+            dogImage.style.display = 'none';
+            resultDisplay.innerText = "Get Toshi! Picture unavailable.";
+        };
+        
+        // 遊戲初次載入
         generateNewTarget();
-        return;
-    }
-
-    startTime = Date.now();
-    resultDisplay.innerText = "Holding...";
-    resultDisplay.className = '';
-    
-    timerId = setInterval(() => {
-        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
-        heldTimeDisplay.innerText = elapsedTime;
-    }, 10);
-}
-
-function handlePressEnd() {
-    if (startTime === 0) return;
-    
-    if (timerId) {
-        clearInterval(timerId);
-        timerId = null;
-    }
-    
-    const endTime = Date.now();
-    const heldTime = (endTime - startTime) / 1000;
-    heldTimeDisplay.innerText = heldTime.toFixed(2);
-
-    if (typeof targetTime !== 'number' || isNaN(targetTime)) {
-        targetTime = 0;
-        resultDisplay.innerText = "Error: the timer is down.";
-        return;
-    }
-
-    if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
-        toshiCount++;
-        resultDisplay.innerText = "Toshi！";
-        resultDisplay.className = 'success';
-        dogImage.style.display = 'block';
-        dogImage.src = 'image/toshi.png?t=' + Date.now();
-        dogImage.alt = "Toshi's picture";
-        toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
-    } else if (heldTime < targetTime) {
-        resultDisplay.innerText = "tooooo";
-        resultDisplay.className = 'too-short';
-    } else {
-        resultDisplay.innerText = "shiiiii";
-        resultDisplay.className = 'too-long';
-    }
-
-    startTime = 0; // 重置 startTime
-    timeoutId = setTimeout(generateNewTarget, 4000);
-}
-
-holdButton.addEventListener('mousedown', handlePressStart);
-holdButton.addEventListener('mouseup', handlePressEnd);
-holdButton.addEventListener('mouseleave', handlePressEnd);
-holdButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    handlePressStart();
-});
-holdButton.addEventListener('touchend', handlePressEnd);
-
-dogImage.onerror = () => {
-    dogImage.style.display = 'none';
-    resultDisplay.innerText = "Get Toshi! Picture unavailable.";
-};
-
-generateNewTarget();
     </script>
 </body>
 </html>
