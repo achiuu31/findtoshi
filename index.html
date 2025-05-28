@@ -23,16 +23,16 @@
             font-size: 28px;
             font-weight: bold;
             color: white;
-            background-color: #007bff;
+            background-color: #fce9bb;
             border-radius: 12px;
             cursor: pointer;
             border: none;
-            box-shadow: 0 5px #0056b3;
+            box-shadow: 0 5px #756b54;
             transition: all 0.07s ease-in-out;
         }
         #toshi-game #holdButton:active {
             transform: translateY(3px);
-            box-shadow: 0 2px #0056b3;
+            box-shadow: 0 2px #756b54;
         }
         #toshi-game #game-info, #toshi-game #result {
             margin-top: 25px;
@@ -141,11 +141,11 @@
                 }
 
                 if (Math.abs(heldTime - targetTime) <= TOLERANCE) {
-                    resultDisplay.innerText = "是 Toshi！";
+                    resultDisplay.innerText = "Toshi！";
                     resultDisplay.className = 'success';
                     dogImage.style.display = 'block';
                     dogImage.src = 'image/toshi.png?t=' + Date.now();
-                    dogImage.alt = "成功召喚的 Toshi 狗狗圖片";
+                    dogImage.alt = "Toshi's picture";
                 } else if (heldTime < targetTime) {
                     resultDisplay.innerText = "tooooo";
                     resultDisplay.className = 'too-short';
