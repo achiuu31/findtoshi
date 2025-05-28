@@ -225,6 +225,7 @@
         dogImage.onerror = () => {
             dogImage.style.display = 'none'; // 不顯示圖片
             resultDisplay.innerText = "Get Toshi! Picture unavailable.";
+            setTimeout(generateNewTarget, 3000);
         };
 
         generateNewTarget();
