@@ -27,6 +27,28 @@
             margin: 0;
             user-select: none;
         }
+        @media (max-width: 600px) {
+            #toshi-game #holdButton {
+                padding: 15px 30px;
+                font-size: 24px;
+            }
+            #toshi-game #game-info, #toshi-game #result, #toshi-game #toshi-counter {
+                font-size: 18px;
+            }
+            #toshi-game #dog-image {
+                max-height: 250px;
+            }
+            #toshi-game #held-time {
+                max-width: 150px;
+            }
+            #promo-section {
+                margin: 20px;
+                padding: 15px;
+            }
+            #promo-section p {
+                font-size: 16px;
+            }
+        }
         #toshi-game #holdButton {
             padding: 20px 40px;
             font-size: 28px;
@@ -98,32 +120,9 @@
             color: #756b54;
             text-decoration: underline;
         }
-        @media (max-width: 600px) {
-            #toshi-game #holdButton {
-                padding: 15px 30px;
-                font-size: 24px;
-            }
-            #toshi-game #game-info, #toshi-game #result, #toshi-game #toshi-counter {
-                font-size: 18px;
-            }
-            #toshi-game #dog-image {
-                max-height: 250px;
-            }
-            #toshi-game #held-time {
-                max-width: 150px;
-            }
-            #promo-section {
-                margin: 20px;
-                padding: 15px;
-            }
-            #promo-section p {
-                font-size: 16px;
-            }
-        }
     </style>
 </head>
 <body>
-    <img id="dog-image" src="image/toshi.png" alt="cute Toshi">
     <div id="toshi-game">
         <button id="holdButton" aria-label="Hold to Get Toshi">Hold to Get Toshi！</button>
         <div id="game-info">
@@ -132,6 +131,7 @@
         </div>
         <div id="toshi-counter">You've Got 0 Toshi!</div>
         <div id="result" aria-live="polite"></div>
+        <img id="dog-image" src="image/toshi.png" alt="cute Toshi">
     </div>
 
     <div id="promo-section">
