@@ -130,7 +130,7 @@
         </div>
         <div id="toshi-counter">You've Got 0 Toshi!</div>
         <div id="result" aria-live="polite"></div>
-        <img id="dog-image" src="images/toshi.png" alt="cute Toshi"> <!-- 修正路徑為 images -->
+        <img id="dog-image" src="image/toshi.png" alt="cute Toshi"> <!-- 修正路徑為 images -->
     </div>
 
     <div id="promo-section">
@@ -197,7 +197,7 @@
                 resultDisplay.innerText = "Toshi！";
                 resultDisplay.className = 'success';
                 dogImage.style.display = 'block';
-                dogImage.src = 'images/toshi.png?t=' + Date.now();
+                dogImage.src = 'image/toshi.png?t=' + Date.now();
                 dogImage.alt = "Toshi's picture";
                 toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
             } else if (heldTime < targetTime) {
