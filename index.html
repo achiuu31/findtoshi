@@ -23,7 +23,7 @@
             justify-content: center;
             height: auto;
             padding: 20px;
-            padding-bottom: 60px;
+            padding-bottom: 100px; /* 為固定按鈕留出空間 */
             margin: 0;
             user-select: none;
         }
@@ -38,6 +38,9 @@
             border: none;
             box-shadow: 0 5px #756b54;
             transition: all 0.07s ease-in-out;
+            position: fixed; /* 固定在畫面底部 */
+            bottom: 20px; /* 距離底部 20px */
+            z-index: 10; /* 確保按鈕在其他元素之上 */
         }
         #toshi-game #holdButton:active {
             transform: translateY(3px);
@@ -77,6 +80,7 @@
         }
         #promo-section {
             margin: 40px 20px;
+            margin-bottom: 100px; /* 為固定按鈕留出空間，避免重疊 */
             padding: 20px;
             text-align: left;
             background-color: #f9f9f9;
@@ -102,6 +106,7 @@
             #toshi-game #holdButton {
                 padding: 15px 30px;
                 font-size: 24px;
+                bottom: 15px; /* 手機模式下稍微調整距離 */
             }
             #toshi-game #game-info, #toshi-game #result, #toshi-game #toshi-counter {
                 font-size: 18px;
@@ -114,6 +119,7 @@
             }
             #promo-section {
                 margin: 20px;
+                margin-bottom: 80px; /* 手機模式下調整間距 */
                 padding: 15px;
             }
             #promo-section p {
@@ -131,7 +137,7 @@
         <div id="toshi-counter">You've Got 0 Toshi!</div>
         <div id="result" aria-live="polite"></div>
         <img id="dog-image" src="image/toshi.png" alt="cute Toshi"> 
-        <button id="holdButton" aria-label="Hold to Get Toshi">Hold to Get Toshi！</button> <!-- 移動到最底部 -->
+        <button id="holdButton" aria-label="Hold to Get Toshi">Hold to Get Toshi！</button>
     </div>
 
     <div id="promo-section">
