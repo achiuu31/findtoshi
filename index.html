@@ -61,12 +61,35 @@
         #toshi-game .too-short { color: #e74c3c; }
         #toshi-game .too-long { color: #f39c12; }
         #toshi-game .success { color: #2ecc71; }
+        #toshi-game {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 0.3s ease;
+        }
+        #toshi-game.toshi-background {
+            background-image: url('image/toshi.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #toshi-game.toshi-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 1;
+        }
+        #toshi-game > * {
+            position: relative;
+            z-index: 2;
+        }
         #toshi-game #dog-image {
             display: none;
-            margin-top: 20px;
-            max-width: 80%;
-            max-height: 350px;
-            background: transparent;
         }
         #toshi-game #held-time {
             display: inline-block;
@@ -163,7 +186,11 @@
             resultDisplay.className = '';
             heldTimeDisplay.innerText = "0.00";
             toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
-            dogImage.style.display = 'none';
+            
+            // 移除背景圖片
+            const gameContainer = document.getElementById('toshi-game');
+            gameContainer.classList.remove('toshi-background');
+            
             startTime = 0;
             gameState = 'ready';
         }
@@ -179,9 +206,12 @@
                 timeoutId = null;
             }
 
+            // 移除背景圖片
+            const gameContainer = document.getElementById('toshi-game');
+            gameContainer.classList.remove('toshi-background');
+
             // 重置顯示但不顯示 "ready..."
             heldTimeDisplay.innerText = "0.00";
-            dogImage.style.display = 'none';
             gameState = 'ready';
         }
 
@@ -238,9 +268,11 @@
                 toshiCount++;
                 resultDisplay.innerText = "Toshi！";
                 resultDisplay.className = 'success';
-                dogImage.style.display = 'block';
-                dogImage.src = 'image/toshi.png?t=' + Date.now();
-                dogImage.alt = "Toshi's picture";
+                
+                // 設置背景圖片而不是顯示單獨的圖片元素
+                const gameContainer = document.getElementById('toshi-game');
+                gameContainer.classList.add('toshi-background');
+                
                 toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
             } else if (heldTime < targetTime) {
                 resultDisplay.innerText = "tooooo";
@@ -266,13 +298,6 @@
             handlePressStart();
         });
         holdButton.addEventListener('touchend', handlePressEnd);
-        
-        dogImage.onerror = () => {
-            dogImage.style.display = 'none';
-            resultDisplay.innerText = "Get Toshi! Picture unavailable.";
-        };
-
-        // 初始化遊戲
         generateNewTarget();
     </script>
 </body>
