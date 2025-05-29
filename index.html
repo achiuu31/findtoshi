@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EGZB21GE9S"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-EGZB21GE9S');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Toshi!</title>
@@ -62,7 +54,7 @@
             font-weight: 500;
         }
         #toshi-game #result {
-            font-size: 48px;
+            font-size: 36px;
             font-weight: bold;
             transition: color 0.3s;
         }
@@ -76,13 +68,27 @@
             background-repeat: no-repeat;
             transition: background-image 0.3s ease;
         }
-        #toshi-game.toshi-background {
+        #toshi-game.toshi-background-0 {
             background-image: url('image/toshi.png');
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
         }
-        #toshi-game.toshi-background::before {
+        #toshi-game.toshi-background-1 {
+            background-image: url('image/toshi3.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #toshi-game.toshi-background-2 {
+            background-image: url('image/toshi2.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #toshi-game.toshi-background-0::before,
+        #toshi-game.toshi-background-1::before,
+        #toshi-game.toshi-background-2::before {
             content: '';
             position: absolute;
             top: 0;
@@ -200,7 +206,7 @@
         <img id="dog-image" src="image/toshi.png" alt="cute Toshi"> 
         <button id="holdButton" aria-label="Hold to Get Toshi">Hold to Get Toshi！</button>
         <div id="promo-section">
-            <p>Meet Toshi, the cutest pup on Solana! 🐶 He loves playing and is growing up so fast!</p>
+            <p>Meet Toshi, the cutest pup on Solana! 🐶 He loves playing timing games and is growing up so fast!</p>
             <p>CA: 8WzDFPNjUSV7ZPpNiqKY8NcWH9J4tDSgSeifp6Kboop</p>
             <p><a href="https://x.com/i/communities/1918067538396586314">Meet Toshi Here!</a></p>
         </div>
@@ -220,7 +226,13 @@
         let targetTime = 0;
         let toshiCount = 0;
         let gameState = 'ready'; // 'ready', 'holding', 'result'
+        let currentToshiBackground = ''; // 記錄當前的背景class
         const TOLERANCE = 0.05;
+        const TOSHI_IMAGES = ['toshi.png', 'toshi3.png', 'toshi2.png']; // 可用的圖片列表
+
+        function getRandomToshiIndex() {
+            return Math.floor(Math.random() * TOSHI_IMAGES.length);
+        }
 
         function generateNewTarget() {
             targetTime = 1;
@@ -232,7 +244,10 @@
             
             // 移除背景圖片
             const gameContainer = document.getElementById('toshi-game');
-            gameContainer.classList.remove('toshi-background');
+            if (currentToshiBackground) {
+                gameContainer.classList.remove(currentToshiBackground);
+                currentToshiBackground = '';
+            }
             
             startTime = 0;
             gameState = 'ready';
@@ -251,7 +266,10 @@
 
             // 移除背景圖片
             const gameContainer = document.getElementById('toshi-game');
-            gameContainer.classList.remove('toshi-background');
+            if (currentToshiBackground) {
+                gameContainer.classList.remove(currentToshiBackground);
+                currentToshiBackground = '';
+            }
 
             // 重置顯示但不顯示 "ready..."
             heldTimeDisplay.innerText = "0.00";
@@ -312,9 +330,11 @@
                 resultDisplay.innerText = "Toshi！";
                 resultDisplay.className = 'success';
                 
-                // 設置背景圖片而不是顯示單獨的圖片元素
+                // 隨機選擇一個Toshi背景圖片
                 const gameContainer = document.getElementById('toshi-game');
-                gameContainer.classList.add('toshi-background');
+                const randomIndex = getRandomToshiIndex();
+                currentToshiBackground = `toshi-background-${randomIndex}`;
+                gameContainer.classList.add(currentToshiBackground);
                 
                 toshiCounterDisplay.innerText = `You've Got ${toshiCount} Toshi!`;
             } else if (heldTime < targetTime) {
@@ -341,6 +361,14 @@
             handlePressStart();
         });
         holdButton.addEventListener('touchend', handlePressEnd);
+        
+        // 移除原本的圖片錯誤處理，因為現在使用背景圖片
+        // dogImage.onerror = () => {
+        //     dogImage.style.display = 'none';
+        //     resultDisplay.innerText = "Get Toshi! Picture unavailable.";
+        // };
+
+        // 初始化遊戲
         generateNewTarget();
     </script>
 </body>
