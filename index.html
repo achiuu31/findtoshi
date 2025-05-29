@@ -124,7 +124,7 @@
             background-repeat: no-repeat;
         }
         #toshi-game.toshi-background-1 {
-            background-image: url('image/toshi1.png');
+            background-image: url('image/toshi3.png');
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -279,7 +279,7 @@
         let gameState = 'ready'; // 'ready', 'holding', 'result'
         let currentToshiBackground = ''; // 記錄當前的背景class
         const TOLERANCE = 0.05;
-        const TOSHI_IMAGES = ['toshi.png', 'toshi1.png', 'toshi2.png']; // 可用的圖片列表
+        const TOSHI_IMAGES = ['toshi.png', 'toshi3.png', 'toshi2.png']; // 可用的圖片列表
 
         function getRandomToshiIndex() {
             return Math.floor(Math.random() * TOSHI_IMAGES.length);
